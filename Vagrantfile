@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "pet-box"
+  config.vm.box = "debian/jessie64"
   config.vm.provider "virtualbox" do |vm, override|
     #override.vm.network 'private_network', ip: "10.0.0.110"
     override.vm.network 'forwarded_port', guest: "8080" , host: "4567"
