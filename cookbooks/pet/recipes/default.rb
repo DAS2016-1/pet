@@ -20,14 +20,14 @@ user 'pet' do
   action :create
 end
 
-file '/etc/postgresql/9.4/main/postgresql.conf' do
+cookbook_file '/etc/postgresql/9.4/main/postgresql.conf' do
   owner 'postgres'
   group 'postgres'
   mode '644'
   action :create
 end
 
-file '/etc/postgresql/9.4/main/pg_hba.conf' do
+cookbook_file '/etc/postgresql/9.4/main/pg_hba.conf' do
   owner 'postgres'
   group 'postgres'
   mode '640'
@@ -56,7 +56,7 @@ execute "psql pet < /usr/share/postgresql/9.4/contrib/debversion.sql" do
   ignore_failure true
 end
 
-file '/etc/hosts' do
+cookbook_file '/etc/hosts' do
   owner 'root'
   group 'root'
   mode '644'
