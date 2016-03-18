@@ -21,8 +21,6 @@ Vagrant.configure(2) do |config|
 	config.vm.provision "chef_solo" do |chef|
     chef.add_recipe "pet"
   end
-	
-	config.vm.synced_folder '.', '/vagrant', disabled: true	
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
