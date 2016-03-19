@@ -1,3 +1,4 @@
+#packages needed
 execute 'apt-get update'
 package 'vim'
 package 'postgresql-9.4'
@@ -14,12 +15,15 @@ package 'python-subversion'
 package 'python-pip'
 package 'wget'
 
+#installing dependency that has no package on debian
 execute 'pip install pyramid_chameleon'
 
+#creating user pet
 user 'pet' do
   action :create
 end
 
+#replacing config files and restarting postgres
 cookbook_file '/etc/postgresql/9.4/main/postgresql.conf' do
   owner 'postgres'
   group 'postgres'
@@ -38,6 +42,7 @@ service 'postgresql' do
   action [:restart, :enable]
 end
 
+#creating user and database
 execute "create pet user" do
   command "createuser pet"
   user "postgres"
@@ -58,6 +63,7 @@ execute "implements debversion types" do
   ignore_failure true
 end
 
+#adding config file for hosts and restarting postgres
 cookbook_file '/etc/hosts' do
   owner 'root'
   group 'root'
@@ -69,7 +75,8 @@ service 'postgresql' do
   action :restart
 end
 
-execute "update schema" do
+#updating schema and inserting data 
+execute "update schema and creating tables" do
   command "/vagrant/pet-update -c"
   user "pet"
   action :run
