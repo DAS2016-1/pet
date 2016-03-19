@@ -2,16 +2,16 @@ execute 'apt-get update'
 package 'vim'
 package 'postgresql-9.4'
 package 'postgresql-9.4-debversion'
-package 'python-argparse' 
-package 'python-debian' 
-package 'python-debianbts' 
-package 'python-inotifyx' 
-package 'python-paste' 
-package 'python-psycopg2' 
-package 'python-pyramid' 
+package 'python-argparse'
+package 'python-debian'
+package 'python-debianbts'
+package 'python-inotifyx'
+package 'python-paste'
+package 'python-psycopg2'
+package 'python-pyramid'
 package 'python-sqlalchemy'
 package 'python-subversion'
-package 'python-pip' 
+package 'python-pip'
 package 'wget'
 
 execute 'pip install pyramid_chameleon'
@@ -35,17 +35,17 @@ cookbook_file '/etc/postgresql/9.4/main/pg_hba.conf' do
 end
 
 service 'postgresql' do
-  action [:start, :enable]
+  action [:restart, :enable]
 end
 
-execute "createuser --createdb pet" do
+execute "createuser pet" do
   user "postgres"
   action :run
   ignore_failure true
 end
 
-execute "createdb pet" do
-  user "pet"
+execute "createdb -O pet pet" do
+  user "postgres"
   action :run
   ignore_failure true
 end
@@ -82,4 +82,3 @@ execute "/srv/pet/pet-serve" do
   user "pet"
   action :run
 end
-
