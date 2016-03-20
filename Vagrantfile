@@ -17,8 +17,11 @@ Vagrant.configure(2) do |config|
     #override.vm.network 'private_network', ip: "10.0.0.110"
     override.vm.network 'forwarded_port', guest: "8080" , host: "4567"
   end
-	
-	config.vm.provision "chef_solo" do |chef|
+
+  config.vm.synced_folder ".", "/vagrant", type: "rsync",
+    rsync__auto: true
+
+  config.vm.provision "chef_solo" do |chef|
     chef.add_recipe "pet"
   end
 
