@@ -47,20 +47,19 @@ execute "create pet user" do
   command "createuser pet"
   user "postgres"
   action :run
-  ignore_failure true
+  not_if "psql postgres -tAc \"SELECT 1 FROM pg_roles WHERE rolname='pet'\" | grep -q 1"
 end
-
+#
 execute "createdb -O pet pet" do
   user "postgres"
   action :run
-  ignore_failure true
+  not_if 'psql -lqt | cut -d \| -f 1 | grep -qw pet'
 end
 
 execute "implements debversion types" do
   command "psql pet < /usr/share/postgresql/9.4/contrib/debversion.sql"
   user "postgres"
   action :run
-  ignore_failure true
 end
 
 #adding config file for hosts and restarting postgres
@@ -80,6 +79,7 @@ execute "update schema and creating tables" do
   command "/vagrant/pet-update -c"
   user "pet"
   action :run
+  not_if "psql --command \"SELECT to_regclass('team');\" && exists=true"
 end
 
 execute "database insert team table" do
