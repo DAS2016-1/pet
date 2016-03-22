@@ -23,7 +23,14 @@ import sys
 
 parser = argparse.ArgumentParser(
     description='create and update database schema for PET')
-parser.add_argument('-c', '--create', action='store_true', default=False)
+
+parser.add_argument('-c', '--create', dest='create', action='store_true',
+                    default=False)
+
+parser.add_argument('--no-cert', dest='no-cert', action='store_false',
+                    default=True)
+
 options = parser.parse_args(sys.argv[1:])
 
-pet.sql.DBUpdater().run(engine=pet.engine(), create_database=options.create)
+pet.sql.DBUpdater().run(engine=pet.engine(options.no-cert),
+                        create_database=options.create)
