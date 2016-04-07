@@ -18,6 +18,8 @@ package 'wget'
 #installing dependency that has no package on debian
 execute 'pip install pyramid_chameleon'
 
+execute 'pip install nose'
+
 #creating user pet
 user 'pet' do
   action :create
