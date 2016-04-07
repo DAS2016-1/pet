@@ -19,6 +19,8 @@ import sqlalchemy.ext.declarative
 import sqlalchemy.orm
 import sqlalchemy.schema
 import sqlalchemy.types
+import os.path
+
 
 class DebVersion(sqlalchemy.types.UserDefinedType):
   """database type for PostgreSQL's debversion type"""
@@ -35,8 +37,10 @@ class DebVersion(sqlalchemy.types.UserDefinedType):
 
 # XXX: Shouldn't there be an API for this?
 sqlalchemy.dialects.postgresql.base.ischema_names['debversion'] = DebVersion
-
-engine = pet.engine()
+if(os.path.isfile("/etc/ssl/debian/certs/ca.crt")):
+    engine = pet.engine(False)
+else:
+    engine = pet.engine(True)
 metadata = sqlalchemy.schema.MetaData()
 metadata.reflect(bind=engine)
 Session = sqlalchemy.orm.sessionmaker(bind=engine)
