@@ -1,10 +1,25 @@
 import unittest
 import pet
+import pet.models
+
 
 class TestPetModels(unittest.TestCase):
 
     def setUp(self):
         pass
 
-    def test_something(self):
-        self.fail("implement me")
+    def test_get_col_spec(self):
+        debversion = pet.models.DebVersion()
+        self.assertEqual("DEBVERSION", debversion.get_col_spec())
+
+    def test_bind_processor(self):
+        debversion = pet.models.DebVersion()
+        process = debversion.bind_processor(None)
+        value = 123
+        self.assertEqual(process(value), value)
+
+    def test_result_processor(self):
+        debversion = pet.models.DebVersion()
+        process = debversion.result_processor(None, None)
+        value = 123
+        self.assertEqual(process(value), value)
