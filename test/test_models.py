@@ -23,3 +23,9 @@ class TestPetModels(unittest.TestCase):
         process = debversion.result_processor(None, None)
         value = 123
         self.assertEqual(process(value), value)
+
+    def test_vcs_if_vcs_exists(self):
+        repository = pet.models.Repository()
+        value = 123
+        repository._vcs = value
+        self.assertEqual(repository.vcs(), value)
