@@ -19,6 +19,7 @@ package 'wget'
 execute 'pip install pyramid_chameleon'
 
 execute 'pip install nose'
+execute 'pip install mock'
 
 #creating user pet
 user 'pet' do
