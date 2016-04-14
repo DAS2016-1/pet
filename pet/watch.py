@@ -283,6 +283,7 @@ class CPAN(object):
 
   @property
   def dists(self):
+    # TODO MES this assumes self._dists is correct if not None. maybe verify
     if self._dists is None:
       dists = []
       contents = self._get_and_uncompress(urlparse.urljoin(self.mirror,
