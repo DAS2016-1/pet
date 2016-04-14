@@ -1,6 +1,8 @@
 import unittest
 import pet
 import pet.models
+from mock import *
+import pet.vcs
 
 
 class TestPetModels(unittest.TestCase):
@@ -28,4 +30,10 @@ class TestPetModels(unittest.TestCase):
         repository = pet.models.Repository()
         value = 123
         repository._vcs = value
+        self.assertEqual(repository.vcs, value)
+
+    def test_vcs_not_in_dict(self):
+        repository = pet.models.Repository()
+        value = 'git'
+        pet.vcs.vcs_backend = MagicMock(return_value=value)
         self.assertEqual(repository.vcs, value)
