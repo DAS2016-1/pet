@@ -64,8 +64,8 @@ class Subversion(VCS):
 
     def link(self, package, filename, directory=False,
              branch=None, tag=None, named_tree=None):
-        assert(not (named_tree and (branch or tag)),
-               "cannot give both named_tree and branch or tag")
+        assert_msg = "cannot give both named_tree and branch or tag"
+        assert not (named_tree and (branch or tag)), assert_msg
         if named_tree is not None:
             if named_tree.type == 'branch':
                 branch = named_tree.name
@@ -133,7 +133,7 @@ class Subversion(VCS):
         return self._list("trunk").keys()
 
     def branches(self, package):
-        root = self._list("")
+        # root = self._list("")
         trunk = self._list("trunk")
         branches = {None: trunk[package]}
         all_branches = self._list("branches")
@@ -252,8 +252,8 @@ class Git(VCS):
 
     def link(self, package, filename=None,
              directory=False, branch=None, tag=None, named_tree=None):
-        assert (not (named_tree and (branch or tag)),
-                "cannot give both named_tree and branch or tag")
+        assert_msg2 = "cannot give both named_tree and branch or tag"
+        assert not (named_tree and (branch or tag)), assert_msg2
         if named_tree is not None:
             if named_tree.type == 'branch':
                 branch = named_tree.name

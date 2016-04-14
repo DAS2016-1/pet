@@ -20,11 +20,11 @@ import debian.changelog
 
 from pyramid.view import view_config
 from pyramid.response import Response
-from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest
+from pyramid.httpexceptions import HTTPNotFound  # , HTTPBadRequest
 from pyramid.url import route_url
 from sqlalchemy.orm import exc
 
-import re
+# import re
 import os
 
 
@@ -74,7 +74,7 @@ def changelog(request):
 def notify(request):
     path = request.session.query(Config.value).filter_by(
         key='request_directory').scalar() or '/srv/pet.debian.net/requests'
-    repo_name = request.params['repository']
+    # repo_name = request.params['repository']
     repo_id = request.session.query(Repository.id).join(Repository.team) \
         .filter(Repository.name == request.params['repository']) \
         .filter(Team.name == request.matchdict['team_name']).scalar()

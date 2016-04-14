@@ -44,7 +44,7 @@ class ClassifiedPackage(object):
 
     @property
     def ready_for_upload(self):
-        highest_tag = self.highest_tag
+        # highest_tag = self.highest_tag
         if (self.distribution is not None and
             self.distribution != 'UNRELEASED' and not
                 self.is_tagged and not self.is_in_archive):
