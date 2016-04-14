@@ -28,4 +28,4 @@ class TestPetModels(unittest.TestCase):
         repository = pet.models.Repository()
         value = 123
         repository._vcs = value
-        self.assertEqual(repository.vcs(), value)
+        self.assertEqual(repository.vcs, value)
