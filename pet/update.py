@@ -374,6 +374,21 @@ class BugTrackerUpdater(object):
     print self.session.query(Bug).join(Bug.bug_sources) \
         .filter((Bug.bug_tracker==self.bug_tracker) & ~ BugSource.source.in_(sources)) \
         .statement
+
+  def query_bug(bug_report, bug_reports, bugs):
+    # TODO: one query per bug is SLOOOOOW!
+    try:
+      bug = bugs[bug_report.bug_number]
+    except KeyError:
+      bug = Bug(bug_tracker=self.bug_tracker, bug_number=bug_report.bug_number)
+      self.session.add(bug)
+      bug_report.update_bug(bug)
+
+      progress += 1
+      if progress % 10 == 0:
+        print "D:   {0} / {1} done".format(progress, len(bug_reports))
+
+
   def _update_bugs(self, bug_reports):
     bugs = {}
     for bug in self.session.query(Bug).filter_by(bug_tracker=self.bug_tracker):
@@ -381,18 +396,8 @@ class BugTrackerUpdater(object):
 
     print "I: Updating {0} bug reports...".format(len(bug_reports))
     progress = 0
-    for br in bug_reports:
-      # TODO: one query per bug is SLOOOOOW!
-      try:
-        bug = bugs[br.bug_number]
-      except KeyError:
-        bug = Bug(bug_tracker=self.bug_tracker, bug_number=br.bug_number)
-        self.session.add(bug)
-      br.update_bug(bug)
-
-      progress += 1
-      if progress % 10 == 0:
-        print "D:   {0} / {1} done".format(progress, len(bug_reports))
+    for bug_report in bug_reports:
+      query_bug(bug_report, bug_reports, bugs)
 
   def run(self, named_trees=None):
     # TODO: Add binary_source_map.
