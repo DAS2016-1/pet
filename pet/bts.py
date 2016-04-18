@@ -41,10 +41,12 @@ class _BugReport(object):
       fixed = self.fixed_versions
       found = self.found_versions
       session.query(BugSource).filter_by(bug=bug).delete()
+
+      # bug_sources will be a list of bug sources collected from the bug param
       bug_sources = list()
-      for s in self.sources:
-        bs = BugSource(bug=bug, source=s, fixed_versions=fixed.get(s, []), found_versions=found.get(s, []))
-        bug_sources.append(bs)
+      for item in self.sources:
+        node = BugSource(bug=bug, source=item, fixed_versions=fixed.get(item, []), found_versions=found.get(item, []))
+        bug_sources.append(node)
       bug.bug_sources = bug_sources
 
     except:
@@ -128,10 +130,11 @@ class DebianBugTracker(object):
     bug_numbers.update(debianbts.get_bugs('src', sources))
 
     # process in batches. stolen from python-debianbts.
+
     BATCH_SIZE = 500
     result = []
-    for i in range(0, len(bug_numbers), BATCH_SIZE):
-        slice = list(bug_numbers)[i:i + BATCH_SIZE]
-        result += debianbts.get_status(slice)
+    for index in range(0, len(bug_numbers), BATCH_SIZE):
+      slice = list(bug_numbers)[index:index + BATCH_SIZE]
+      result += debianbts.get_status(slice)
 
-    return [ _DebianBugReport(b, self.binary_source_map, self.ignore_unknown_binaries) for b in result ]
+    return [ _DebianBugReport(bug, self.binary_source_map, self.ignore_unknown_binaries) for bug in result ]
