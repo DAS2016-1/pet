@@ -1,3 +1,4 @@
+""""Classes to update the software."""
 # vim:ts=2:sw=2:et:ai:sts=2
 # Copyright 2011, Ansgar Burchardt <ansgar@debian.org>
 #
@@ -48,16 +49,17 @@ re_ignore = re.compile(re_string_ignore, re.IGNORECASE)
 re_waits_for = re.compile(re_string_waits_for, re.IGNORECASE | re.VERBOSE)
 re_todo = re.compile(re_string_todo)
 
+
 class NamedTreeUpdater(object):
-  """update a `pet.models.NamedTree`"""
+  """Update a `pet.models.NamedTree`."""
+
   def delete_old_files(self):
-    """remove all outdated versions of files for this named tree"""
+    """Remove all outdated versions of files for this named tree."""
     self.session.query(File).filter((File.named_tree == self.named_tree) & (File.commit_id != self.named_tree.commit_id)).delete()
+
   def _get(self, filename):
-    """
-    get contents of a file for the current named tree as a string,
-    or None if the file does not exist
-    """
+    # Get contents of a file for the current named tree as a string.
+    # or None if the file does not exist.
     if self.named_tree.type == 'tag':
       contents = self.vcs.file(self.package.name, filename, tag=self.named_tree.name)
     elif self.named_tree.type == 'branch':
@@ -71,8 +73,9 @@ class NamedTreeUpdater(object):
       except UnicodeDecodeError:
         contents = unicode(contents, 'iso-8859-1')
     return contents
+
   def file(self, filename):
-    """retrieve the named file from the VCS and store it in the database.
+    """Retrieve the named file from the VCS and store it in the database.
 
     Returns a tuple (file, changed) with file a `pet.models.File`
     object and changed a Boolean indicating that the file was
@@ -90,8 +93,9 @@ class NamedTreeUpdater(object):
       self.session.add(f)
       changed = True
     return f, changed
+
   def update_patches(self):
-    """update list of patches for named tree"""
+    """Update list of patches for named tree."""
     patches, changed = self.file("debian/patches/series")
     if not changed and not self.force: return
     self.session.query(Patch).filter_by(named_tree=self.named_tree).delete()
@@ -103,8 +107,9 @@ class NamedTreeUpdater(object):
         if len(fields):
           patch = Patch(named_tree=self.named_tree, name=fields[0])
           self.session.add(patch)
+
   def update_control(self):
-    """update information extracted from debian/control"""
+    """Update information extracted from debian/control."""
     control_file, changed = self.file("debian/control")
     if not changed and not self.force: return
     nt = self.named_tree
@@ -125,8 +130,9 @@ class NamedTreeUpdater(object):
         nt.homepage = None
     else:
       nt.source = nt.maintainer = nt.uploaders = nt.homepage = None
+
   def update_changelog(self):
-    """update information extracted from debian/changelog"""
+    """Update information extracted from debian/changelog."""
     changelog_file, changed = self.file("debian/changelog")
     if not changed and not self.force: return
     nt = self.named_tree
@@ -160,10 +166,13 @@ class NamedTreeUpdater(object):
     else:
       nt.source_changelog = nt.version = nt.distribution = nt.urgency = nt.last_changed = nt.last_changed_by = None
       nt.versions = []
+
   def update_watch(self):
-    """update cached version of debian/watch"""
+    """Update cached version of debian/watch."""
     watch_file, changed = self.file("debian/watch")
+
   def run(self, named_tree, package, vcs, force=False):
+    """Run the updating in the screen."""
     self.session = Session.object_session(named_tree)
     self.named_tree = named_tree
     self.package = package
@@ -178,8 +187,10 @@ class NamedTreeUpdater(object):
     self.update_changelog()
     self.update_watch()
 
+
 class PackageUpdater(object):
-  """update a `pet.models.Package`"""
+  """Update a `pet.models.Package`."""
+
   def _update_named_tree_list(self, type, known, existing):
     changed = []
 
@@ -220,8 +231,10 @@ class PackageUpdater(object):
     self.update_branch_list()
     self.update_named_trees()
 
+
 class RepositoryUpdater(object):
-  """update a `pet.models.Repository`"""
+  """Update a `pet.models.Repository`."""
+
   def __init__(self, repository, force=False):
     self.session = Session.object_session(repository)
     self.repository = repository
@@ -382,7 +395,7 @@ class BugTrackerUpdater(object):
         print "D:   {0} / {1} done".format(progress, len(bug_reports))
 
   def run(self, named_trees=None):
-    # TODO: Add binary_source_map
+    # TODO: Add binary_source_map.
     bts = pet.bts.DebianBugTracker({}, ignore_unknown_binaries=True)
     # TODO: Unify code path once _delete_unreferenced_bugs is fixed
     # to no longer need the list of sources.
