@@ -117,7 +117,9 @@ class NamedTreeUpdater(object):
   def update_control(self):
     """Update information extracted from debian/control."""
     control_file, changed = self.file("debian/control")
-    if not changed and not self.force: return
+    if not changed and not self.force:
+      return
+
     nt = self.named_tree
     if control_file.contents:
       control = debian.deb822.Deb822(control_file.contents)
@@ -141,26 +143,26 @@ class NamedTreeUpdater(object):
     """Update information extracted from debian/changelog."""
     changelog_file, changed = self.file("debian/changelog")
     if not changed and not self.force: return
-    nt = self.named_tree
-    nt.ignore = nt.todo = False
+    namedtree = self.named_tree
+    namedtree.ignore = nt.todo = False
     self.session.query(Wait).filter_by(named_tree=self.named_tree).delete()
 
     if changelog_file.contents:
       changelog = debian.changelog.Changelog(changelog_file.contents,
           strict=False)
-      nt.source_changelog = changelog.package
-      nt.version = str(changelog.version)
-      nt.versions = [ str(v) for v in changelog.versions ]
-      nt.distribution = changelog.distributions
-      nt.urgency = changelog.urgency
-      nt.last_changed = changelog.date
-      nt.last_changed_by = changelog.author
+      namedtree.source_changelog = changelog.package
+      namedtree.version = str(changelog.version)
+      namedtree.versions = [ str(v) for v in changelog.versions ]
+      namedtree.distribution = changelog.distributions
+      namedtree.urgency = changelog.urgency
+      namedtree.last_changed = changelog.date
+      namedtree.last_changed_by = changelog.author
 
       # TODO: Use public API once #634849 is fixed.
       for line in changelog._blocks[0].changes():
         match = re_ignore.search(line)
-        if match and match.group('version') == nt.version:
-          nt.ignore = True
+        if match and match.group('version') == namedtree.version:
+          namedtree.ignore = True
 
         match = re_waits_for.search(line)
         if match:
@@ -168,10 +170,10 @@ class NamedTreeUpdater(object):
           self.session.add(wait)
 
         if re_todo.search(line):
-          nt.todo = True
+          namedtree.todo = True
     else:
-      nt.source_changelog = nt.version = nt.distribution = nt.urgency = nt.last_changed = nt.last_changed_by = None
-      nt.versions = []
+      namedtree.source_changelog = namedtree.version = namedtree.distribution = namedtree.urgency = namedtree.last_changed = namedtree.last_changed_by = None
+      namedtree.versions = []
 
   def update_watch(self):
     """Update cached version of debian/watch."""
