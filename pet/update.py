@@ -13,32 +13,40 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-from pet.exceptions import *
-from pet.models import *
-import pet.vcs
-import pet.bts
-import pet.watch
+import os.path
+
+import re
+import shutil
+import subprocess
+import tempfile
 
 import debian
 import debian.changelog
 import debian.deb822
-import os.path
-import re
-import shutil
+
+
+import pet.bts
+from pet.exceptions import *
+from pet.models import *
+import pet.vcs
+import pet.watch
+
 import sqlalchemy.orm
 import sqlalchemy.orm.exc
-import subprocess
-import tempfile
 
-re_ignore = re.compile("IGNORE[ -]VERSION:?\s*(?P<version>\S+)", re.IGNORECASE)
-re_waits_for = re.compile(r"""
+re_string_waits_for = r"""
   WAITS[ -]FOR:?\s*
   (?P<package>\S*)                           # package name
   (?:
     \s+(:?\([<=>]*\s*)?(?P<version>\S+?)\)?  # optional version number
     (?:\s+(?P<comment>.*))?                  # and comment
-  )?$""", re.IGNORECASE | re.VERBOSE)
-re_todo = re.compile(r"\A\s*(?:\* )?(?:TODO|PROBLEM|QUESTION):")
+  )?$"""
+re_string_ignore = "IGNORE[ -]VERSION:?\s*(?P<version>\S+)"
+re_string_todo = r"\A\s*(?:\* )?(?:TODO|PROBLEM|QUESTION):"
+
+re_ignore = re.compile(re_string_ignore, re.IGNORECASE)
+re_waits_for = re.compile(re_string_waits_for, re.IGNORECASE | re.VERBOSE)
+re_todo = re.compile(re_string_todo)
 
 class NamedTreeUpdater(object):
   """update a `pet.models.NamedTree`"""
