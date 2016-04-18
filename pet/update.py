@@ -82,25 +82,31 @@ class NamedTreeUpdater(object):
     updated.
     """
     try:
-      f = self.named_tree.file(filename)
+      object_file = self.named_tree.file(filename)
       changed = False
     except sqlalchemy.orm.exc.NoResultFound:
       try:
         contents = self._get(filename)
       except FileNotFound:
         contents = None
-      f = File(named_tree=self.named_tree, commit_id=self.named_tree.commit_id, name=filename, contents=contents)
+      object_file = File(named_tree=self.named_tree, commit_id=self.named_tree.commit_id, name=filename, contents=contents)
       self.session.add(f)
       changed = True
-    return f, changed
+    return object_file, changed
 
   def update_patches(self):
     """Update list of patches for named tree."""
-    patches, changed = self.file("debian/patches/series")
-    if not changed and not self.force: return
+
+    patches_path = "debian/patches/series"
+    patches, changed = self.file(patches_path)
+    if not changed and not self.force:
+      return
+
     self.session.query(Patch).filter_by(named_tree=self.named_tree).delete()
     if patches.contents:
-      for line in patches.contents.splitlines():
+      separete_patches = patches.contentes.splitlines()
+
+      for line in separete_patches:
         if line.startswith("#"):
           continue
         fields = line.split()
@@ -267,9 +273,12 @@ class RepositoryUpdater(object):
         named_trees_by_package[p] = []
       for nt in self.session.query(NamedTree).join(NamedTree.package).filter(Package.repository==self.repository):
         named_trees_by_package[nt.package].append(nt)
-      print "D: Looking for changes in {0} packages.".format(len(named_trees_by_package))
+      look_packges_string = "D: Looking for changes in {0} packages."
+      found_packges_string = "D: Found {0} changed packages."
+
+      print change_packges_string.format(len(named_trees_by_package))
       changed = self.vcs.changed_named_trees(self.session, named_trees_by_package)
-      print "D: Found {0} changed packages.".format(len(changed))
+      print found_packges_string.format(len(changed))
 
       ntu = NamedTreeUpdater()
       for p, nts in changed.iteritems():
