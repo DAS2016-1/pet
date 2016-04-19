@@ -75,7 +75,7 @@ class _DebianBugReport(_BugReport):
 
   def _split_versions(self, version_strings):
     """
-    given a list of strings "binary/version" or "version", this function
+    Given a list of strings "binary/version" or "version", this function
     returns a dict mapping source package names to listed versions.
     For strings of the format "version", it is assumed that all source
     packages for this bug report are meant.
