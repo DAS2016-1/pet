@@ -159,7 +159,8 @@ class NamedTreeUpdater(object):
       namedtree.last_changed_by = changelog.author
 
       # TODO: Use public API once #634849 is fixed.
-      for line in changelog._blocks[0].changes():
+      change_in_lines = changelog._blocks[0].changes()
+      for line in change_in_lines:
         match = re_ignore.search(line)
         if match and match.group('version') == namedtree.version:
           namedtree.ignore = True
@@ -187,7 +188,8 @@ class NamedTreeUpdater(object):
     self.vcs = vcs
     self.force = force
 
-    print "I: updating {0}, {1} {2}".format(self.package.name, self.named_tree.type, self.named_tree.name)
+    updating_string = "I: updating {0}, {1} {2}"
+    print updating_string.format(self.package.name, self.named_tree.type, self.named_tree.name)
 
     self.delete_old_files()
     self.update_patches()
@@ -202,19 +204,19 @@ class PackageUpdater(object):
   def _update_named_tree_list(self, type, known, existing):
     changed = []
 
-    for name, nt in known.iteritems():
+    for name, namedtree in known.iteritems():
       commit_id = existing.get(name, None)
       if commit_id is None:
-        self.session.delete(nt)
+        self.session.delete(namedtree)
       else:
-        nt.commit_id = str(commit_id)
-        changed.append(nt)
+        namedtree.commit_id = str(commit_id)
+        changed.append(namedtree)
 
     for name, commit_id in existing.iteritems():
       if name not in known:
-        nt = NamedTree(type=type, name=name, commit_id=str(commit_id), package=self.package)
-        self.session.add(nt)
-        changed.append(nt)
+        namedtree = NamedTree(type=type, name=name, commit_id=str(commit_id), package=self.package)
+        self.session.add(namedtree)
+        changed.append(namedtree)
 
     return changed
   def update_tag_list(self):
