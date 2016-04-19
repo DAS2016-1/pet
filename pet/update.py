@@ -254,13 +254,13 @@ class RepositoryUpdater(object):
     self.session.begin_nested()
     try:
       known_packages = {}
-      for p in self.repository.packages:
-        known_packages[p.name] = p
+      for package in self.repository.packages:
+        known_packages[p.name] = package
       existing_packages = self.vcs.packages
 
-      for name, p in known_packages.iteritems():
+      for name, package in known_packages.iteritems():
         if name not in existing_packages:
-          self.session.delete(p)
+          self.session.delete(package)
       for name in existing_packages:
         if name not in known_packages:
           package = Package(name=name, repository=self.repository)
@@ -285,20 +285,20 @@ class RepositoryUpdater(object):
       print found_packges_string.format(len(changed))
 
       ntu = NamedTreeUpdater()
-      for p, nts in changed.iteritems():
+      for item, nts in changed.iteritems():
         for nt in nts:
-          ntu.run(nt, p, self.vcs)
+          ntu.run(nt, item, self.vcs)
       self.session.commit()
     except:
       self.session.rollback()
       raise
   def update_all_packages(self):
-    for p in self.repository.packages:
-      pu = PackageUpdater()
+    for package in self.repository.packages:
+      packegeupdater = PackageUpdater()
       self.session.begin_nested()
       try:
-        print "I: Updating package {0}".format(p.name)
-        pu.run(p, self.vcs, force=self.force)
+        print "I: Updating package {0}".format(package.name)
+        packageupdater.run(package, self.vcs, force=self.force)
         self.session.commit()
       # XXX: Do we want to catch all exceptions here? Probably yes.
       #except Exception as e:
