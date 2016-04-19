@@ -273,10 +273,10 @@ class RepositoryUpdater(object):
     self.session.begin_nested()
     try:
       named_trees_by_package = {}
-      for p in self.repository.packages:
-        named_trees_by_package[p] = []
-      for nt in self.session.query(NamedTree).join(NamedTree.package).filter(Package.repository==self.repository):
-        named_trees_by_package[nt.package].append(nt)
+      for package in self.repository.packages:
+        named_trees_by_package[package] = []
+      for namedtree in self.session.query(NamedTree).join(NamedTree.package).filter(Package.repository==self.repository):
+        named_trees_by_package[namedtree.package].append(namedtree)
       look_packges_string = "D: Looking for changes in {0} packages."
       found_packges_string = "D: Found {0} changed packages."
 
@@ -284,10 +284,10 @@ class RepositoryUpdater(object):
       changed = self.vcs.changed_named_trees(self.session, named_trees_by_package)
       print found_packges_string.format(len(changed))
 
-      ntu = NamedTreeUpdater()
+      namedtreeupdater = NamedTreeUpdater()
       for item, nts in changed.iteritems():
-        for nt in nts:
-          ntu.run(nt, item, self.vcs)
+        for namedtreeupdater in nts:
+          ntu.run(namedtreeupdater, item, self.vcs)
       self.session.commit()
     except:
       self.session.rollback()
